@@ -1,0 +1,6 @@
+# Optional real OCR dependencies.
+# Do not install automatically in the main project flow.
+# Install only when you want to enable OCR_MODE=real.
+
+paddlepaddle
+paddleocr

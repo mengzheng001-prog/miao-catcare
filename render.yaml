@@ -1,0 +1,38 @@
+# Render 部署蓝图（Blueprint）
+# 用法：把这个文件提交到 GitHub repo 根目录，去 https://dashboard.render.com/blueprints 创建。
+# 单一 Web Service 同时 serve 前端 dist + 后端 /api，无需 CORS。
+
+services:
+  - type: web
+    name: catcare
+    runtime: node
+    # 免费 tier 即可启动 Demo；流量上来再升级 starter。
+    plan: free
+    # 国内访问较慢可换 Singapore；国外 Oregon。
+    region: singapore
+    branch: main
+    # 装依赖 + Vite 打包前端到 dist
+    buildCommand: npm install && npm run build
+    # tsx 跑生产 server（同时 serve dist + /api）
+    startCommand: npm run start
+    # 健康检查路由（已在 server/index.ts 实现）
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"
+      # DeepSeek Key 到 Render Dashboard 单独配置（sync: false 表示不写进蓝图）
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: DEEPSEEK_TIMEOUT_MS
+        value: "120000"
+      - key: DEEPSEEK_SAMPLE_MODE
+        value: short
+      # OCR 默认走 stub；生产暂不部署 Python OCR 服务
+      - key: OCR_MODE
+        value: stub
+      # CORS 白名单（同域部署留空即可；如果未来前端拆分到 Vercel，填入 vercel 域名）
+      - key: CORS_ORIGIN
+        value: ""

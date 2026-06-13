@@ -1,0 +1,47 @@
+# ===== 依赖 / 构建产物 =====
+node_modules/
+build/
+dist/
+coverage/
+
+# ===== 环境变量（含 API Key，绝对不要进 git）=====
+.env*
+!.env.example
+
+# ===== 系统文件 / 日志 =====
+.DS_Store
+*.log
+
+# ===== Python venv（PaddleOCR 等可选服务）=====
+python_ocr_service/.venv/
+python_ocr_service/models/
+**/__pycache__/
+*.pyc
+
+# ===== IDE / 编辑器 =====
+.vscode/
+.idea/
+*.swp
+
+# ===== 内部文档（不公开）=====
+docs/
+doc/
+README_MIGRATION.md
+AI_WORK_RULES.md
+NEXT_STEPS.md
+CODEX_HANDOFF_PROMPT.md
+.claude/
+
+# ===== 办公文档 / 真实 PDF =====
+*.docx
+*.xlsx
+*.pptx
+*.pdf
+
+# ===== 临时归档 =====
+.trash_*/
+
+# ===== 后端运行时数据 =====
+uploads/
+tmp/
+data/
