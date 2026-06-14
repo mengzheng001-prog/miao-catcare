@@ -3,6 +3,7 @@ node_modules/
 build/
 dist/
 coverage/
+release/
 
 # ===== 环境变量（含 API Key，绝对不要进 git）=====
 .env*

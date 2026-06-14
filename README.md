@@ -18,12 +18,26 @@
 
 ---
 
-## 一键启动
+## 安装方式
+
+### 方式 1：下载桌面 app（推荐 · 双击即开）
+
+去 [Releases 页面](https://github.com/mengzheng001-prog/miao-catcare/releases) 下载对应你系统的安装包：
+
+| 系统 | 文件名 |
+|---|---|
+| Windows | `CatCare-Setup-<版本>-x64.exe` |
+| macOS | `CatCare-<版本>-x64.dmg` / `arm64.dmg` |
+| Linux | `CatCare-<版本>-x64.AppImage` |
+
+安装后首次启动会自动弹出设置面板，填入 API Key 即可使用。
+
+### 方式 2：从源码运行（开发者）
 
 需要先装 [Node.js 18+](https://nodejs.org/)（推荐 LTS）。Windows 用户在 Git Bash 或 WSL 中执行下面命令。
 
 ```bash
-git clone https://github.com/<你的用户名>/miao-catcare.git
+git clone https://github.com/mengzheng001-prog/miao-catcare.git
 cd miao-catcare
 
 ./setup.sh   # 装依赖、交互式填 API key、构建前端
@@ -31,6 +45,17 @@ cd miao-catcare
 ```
 
 浏览器打开 [http://localhost:3001](http://localhost:3001) 即可使用。
+
+### 方式 3：自己打包桌面 app
+
+```bash
+npm install
+npm run electron:dist:win     # 出 Windows .exe
+npm run electron:dist:linux   # 出 Linux .AppImage
+npm run electron:dist:mac     # 出 macOS .dmg（需要在 macOS 上 build）
+```
+
+产物在 `release/` 目录。
 
 ---
 

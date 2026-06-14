@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>CatCare 设置</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 28px 32px;
+    user-select: none;
+  }
+  h1 {
+    font-size: 18px;
+    margin: 0 0 6px;
+    font-weight: 700;
+  }
+  .sub {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 22px;
+    line-height: 1.6;
+  }
+  .group {
+    margin-bottom: 18px;
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    color: #475569;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  label .req { color: #dc2626; margin-left: 3px; }
+  input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+    background: #fff;
+    user-select: text;
+  }
+  input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+  .hint {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .hint a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+  .hint a:hover { text-decoration: underline; }
+  .actions {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  button {
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  button.primary {
+    background: #2563eb;
+    color: #fff;
+  }
+  button.primary:hover { background: #1d4ed8; }
+  button.secondary {
+    background: #fff;
+    color: #475569;
+    border-color: #cbd5e1;
+  }
+  button.secondary:hover { background: #f1f5f9; }
+  .note {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #92400e;
+    margin-top: 18px;
+    line-height: 1.6;
+  }
+  .status {
+    font-size: 12px;
+    color: #16a34a;
+    margin-right: auto;
+    align-self: center;
+    visibility: hidden;
+  }
+  .status.show { visibility: visible; }
+</style>
+</head>
+<body>
+  <h1>CatCare 设置</h1>
+  <div class="sub">填入 AI 服务的 API Key 即可解析真实 PDF。任何 Key 都仅本地保存。</div>
+
+  <div class="group">
+    <label>DeepSeek API Key<span class="req">*</span></label>
+    <input type="password" id="deepseek-key" placeholder="sk-..." autocomplete="off" spellcheck="false">
+    <div class="hint">必填。用于结构化 PDF 文本。<a href="#" data-link="https://platform.deepseek.com/">申请入口 →</a></div>
+  </div>
+
+  <div class="group">
+    <label>Doubao API Key</label>
+    <input type="password" id="doubao-key" placeholder="选填" autocomplete="off" spellcheck="false">
+    <div class="hint">可选。用于扫描件 / 图片型 PDF 的视觉识别。<a href="#" data-link="https://www.volcengine.com/product/doubao">火山方舟控制台 →</a></div>
+  </div>
+
+  <div class="group">
+    <label>Doubao Model / 接入点 ID</label>
+    <input type="text" id="doubao-model" placeholder="例如：ep-202506xxxxxxxx" autocomplete="off" spellcheck="false">
+    <div class="hint">Doubao 控制台「在线推理 → 接入点」中复制。仅在填了 Doubao Key 时需要。</div>
+  </div>
+
+  <div class="note">
+    保存后需要<strong>重启应用</strong>才能让新 Key 生效（点击"保存并重启"即可）。
+  </div>
+
+  <div class="actions">
+    <span class="status" id="status">✓ 已保存</span>
+    <button class="secondary" id="cancel">取消</button>
+    <button class="primary" id="save">保存并重启</button>
+  </div>
+
+<script>
+  const electron = window.catcareElectron;
+
+  // 外链跳系统浏览器
+  document.querySelectorAll("a[data-link]").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.open(a.dataset.link, "_blank");
+    });
+  });
+
+  // 加载已有配置
+  electron.loadConfig().then((cfg) => {
+    if (cfg.DEEPSEEK_API_KEY) document.getElementById("deepseek-key").value = cfg.DEEPSEEK_API_KEY;
+    if (cfg.DOUBAO_API_KEY) document.getElementById("doubao-key").value = cfg.DOUBAO_API_KEY;
+    if (cfg.DOUBAO_MODEL) document.getElementById("doubao-model").value = cfg.DOUBAO_MODEL;
+  });
+
+  document.getElementById("cancel").addEventListener("click", () => electron.closeSettings());
+
+  document.getElementById("save").addEventListener("click", async () => {
+    const ds = document.getElementById("deepseek-key").value.trim();
+    const db = document.getElementById("doubao-key").value.trim();
+    const dm = document.getElementById("doubao-model").value.trim();
+    if (!ds && !db) {
+      alert("至少填一个 API Key");
+      return;
+    }
+    if (db && !dm) {
+      alert("填了 Doubao Key 必须同时填 Model / 接入点 ID");
+      return;
+    }
+    const ok = await electron.saveConfig({
+      DEEPSEEK_API_KEY: ds,
+      DOUBAO_API_KEY: db,
+      DOUBAO_MODEL: dm,
+    });
+    if (!ok) {
+      alert("保存失败");
+      return;
+    }
+    document.getElementById("status").classList.add("show");
+    setTimeout(() => electron.relaunchApp(), 400);
+  });
+</script>
+</body>
+</html>

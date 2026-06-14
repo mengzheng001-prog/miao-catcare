@@ -1,7 +1,10 @@
 {
-  "name": "react-example",
+  "name": "catcare",
+  "productName": "CatCare",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "宠物医疗档案助手 - PDF 智能解析 + 多宠物管理",
+  "main": "electron/main.cjs",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
@@ -14,8 +17,16 @@
     "preview": "vite preview",
     "start": "NODE_ENV=production TMPDIR=/tmp tsx server/index.ts",
     "start:full": "npm run build && npm run start",
-    "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "clean": "rm -rf dist build release",
+    "lint": "tsc --noEmit",
+    "electron:build-server": "node electron/build-server.mjs",
+    "electron:build-all": "npm run build && npm run electron:build-server",
+    "electron:dev": "npm run electron:build-all && electron .",
+    "electron:pack": "npm run electron:build-all && electron-builder --dir",
+    "electron:dist": "npm run electron:build-all && electron-builder",
+    "electron:dist:win": "npm run electron:build-all && electron-builder --win",
+    "electron:dist:linux": "npm run electron:build-all && electron-builder --linux",
+    "electron:dist:mac": "npm run electron:build-all && electron-builder --mac"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -43,6 +54,9 @@
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.3",
+    "electron-store": "^11.0.2",
     "tailwindcss": "^4.1.14",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"

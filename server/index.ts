@@ -46,7 +46,10 @@ app.use("/api", (_req, res) => {
 });
 
 // === 生产模式：serve 前端 dist + SPA history fallback ===
-const distDir = path.resolve(process.cwd(), "dist");
+// CATCARE_DIST_DIR 由 Electron main process 注入；普通 web 部署 fallback 到 cwd/dist
+const distDir = process.env.CATCARE_DIST_DIR
+  ? path.resolve(process.env.CATCARE_DIST_DIR)
+  : path.resolve(process.cwd(), "dist");
 if (isProduction && fs.existsSync(distDir)) {
   app.use(express.static(distDir, { index: false, maxAge: "7d" }));
   // SPA fallback：把非 /api 的 GET 全部返回 index.html，让前端路由接管

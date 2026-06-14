@@ -1,0 +1,63 @@
+appId: com.miaozaizai.catcare
+productName: CatCare
+copyright: Copyright © 2026 miaozaizai
+
+# 产物输出目录
+directories:
+  output: release
+  buildResources: electron/build-assets
+
+# 打进包的文件
+files:
+  - electron/**/*
+  - build/server-bundle.cjs   # esbuild bundle 出的后端
+  - dist/**/*                 # vite build 出的前端
+  - package.json
+  - "!node_modules"            # 不要把 node_modules 全打进去，server bundle 已 inline
+  - "!**/*.map"
+  - "!**/*.ts"
+  - "!**/*.tsx"
+
+# 排除运行时不需要的依赖（server-bundle.cjs 已经 inline 了所有 npm 包）
+asarUnpack:
+  - electron/settings.html
+
+# ────────────────────────────────────────────
+# Windows
+# 用 portable 目标：单文件 .exe，双击即用，不需要安装，
+# 也不需要 wine / signtool（跨平台 build 友好）。
+# ────────────────────────────────────────────
+win:
+  target:
+    - target: portable
+      arch: [x64]
+  signAndEditExecutable: false
+  artifactName: "CatCare-${version}-${arch}-portable.${ext}"
+
+portable:
+  artifactName: "CatCare-${version}-${arch}-portable.${ext}"
+  splashImage: null
+
+# ────────────────────────────────────────────
+# Linux
+# ────────────────────────────────────────────
+linux:
+  target:
+    - target: AppImage
+      arch: [x64]
+  category: Utility
+  artifactName: "CatCare-${version}-${arch}.${ext}"
+
+# ────────────────────────────────────────────
+# macOS（在 macOS 上 build 才能签名 / DMG；非 mac 平台跳过）
+# ────────────────────────────────────────────
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  category: public.app-category.healthcare-fitness
+  artifactName: "CatCare-${version}-${arch}.${ext}"
+
+# 不打开发依赖到包里
+npmRebuild: false
+nodeGypRebuild: false
